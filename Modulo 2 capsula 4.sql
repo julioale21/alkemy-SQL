@@ -72,6 +72,7 @@ INSERT INTO curso VALUES(9, 'curso CN', 'este es el curso CN', 20, 'noche', 2)
 INSERT INTO curso VALUES(10, 'curso DN', 'este es el curso DN', 20, 'noche', 2)
 INSERT INTO curso VALUES(11, 'curso EN', 'este es el curso EN', 20, 'noche', 2)
 INSERT INTO curso VALUES(12, 'curso FN', 'este es el curso FN', 20, 'noche', 6)
+INSERT INTO curso VALUES(105, 'curso AN105', 'este es el curso AN105', 20, 'noche', 1)
 
 
 INSERT INTO inscripcion VALUES(1, 1, 1, '2021-03-05')
@@ -91,6 +92,7 @@ INSERT INTO inscripcion VALUES(14, 5, 1, '2021-03-05')
 INSERT INTO inscripcion VALUES(15, 5, 2, '2021-03-05')
 INSERT INTO inscripcion VALUES(16, 6, 3, '2021-03-05')
 INSERT INTO inscripcion VALUES(17, 6, 4, '2021-03-05')
+INSERT INTO inscripcion VALUES(18, 105, 4, '2021-03-05')
 
 
 -- 1) Escriba una consulta que devuelva la cantidad de profesores que dictan más de un curso en el turno Noche.
@@ -102,3 +104,10 @@ SELECT * FROM profesor
 					HAVING COUNT(profesor_id) > 1)
 					
 -- 2) Escriba una consulta para obtener la información de todos los estudiantes que no realizan el curso con código 105.
+SELECT * FROM estudiante 
+	WHERE legajo IN 
+		(SELECT inscripcion.estudiante_legajo FROM curso, inscripcion 
+			WHERE inscripcion.CURSO_codigo = curso.codigo 
+				AND NOT curso.codigo = '105' 
+					GROUP BY inscripcion.ESTUDIANTE_legajo)
+
