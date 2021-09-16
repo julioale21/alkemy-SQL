@@ -1,36 +1,40 @@
 CREATE TABLE profesor (
-	id INT PRIMARY_KEY AUTO_INCREMENT NOT NULL, 
+	id INT AUTO_INCREMENT NOT NULL, 
 	nombre VARCHAR(45) NOT NULL, 
 	apellido VARCHAR(45) NOT NULL,
 	fecha_nacimiento DATE NOT NULL,
-	salario FLOAT NOT NULL
+	salario FLOAT NOT NULL,
+  	PRIMARY KEY (id)
 	)
-
+	
 CREATE TABLE curso (
-	codigo INT PRIMARY_KEY AUTO_INCREMENT NOT NULL, 
+	codigo INT AUTO_INCREMENT NOT NULL, 
 	nombre VARCHAR(45) NOT NULL,
 	descripcion VARCHAR(45) NOT NULL,
 	cupo INT NOT NULL,
 	turno VARCHAR(45) NOT NULL,
 	PROFESOR_id INT,
 	FOREIGN KEY (PROFESOR_id) REFERENCES profesor(id)
+  	PRIMARY KEY(codigo)
 	)
 	
 CREATE TABLE estudiante (
-	legajo INT PRIMARY_KEY AUTO_INCREMENT NOT NULL,
+	legajo INT AUTO_INCREMENT NOT NULL,
 	nombre VARCHAR(45) NOT NULL,
 	apellido VARCHAR(45) NOT NULL,
 	fecha_nacimiento DATE NOT NULL,
-	carrera VARCHAR(45) NOT NULL
+	carrera VARCHAR(45) NOT NULL,
+  	PRIMARY KEY(legajo)
 	)
 	
 CREATE TABLE inscripcion (
-	numero INT PRIMARY_KEY AUTO_INCREMENT NOT NULL,
+	numero INT AUTO_INCREMENT NOT NULL,
 	CURSO_codigo INT,
 	ESTUDIANTE_legajo INT,
 	fecha_hora TIMESTAMP NOT NULL,
 	FOREIGN KEY (ESTUDIANTE_legajo) REFERENCES estudiante(legajo),
 	FOREIGN KEY (CURSO_codigo) REFERENCES curso(codigo)
+  	PRIMARY KEY(numero)
 	)
 	
 INSERT INTO profesor VALUES(1, 'Jorge', 'Perez', '1982-03-06', 55000)
@@ -38,7 +42,7 @@ INSERT INTO profesor VALUES(2, 'Juan', 'Diaz', '1985-01-06', 75000)
 INSERT INTO profesor VALUES(3, 'Diego', 'Ramoz', '1982-03-09', 80000) 
 INSERT INTO profesor VALUES(4, 'Mario', 'Roman', '1990-07-23', 65000) 
 INSERT INTO profesor VALUES(5, 'Pedro', 'Tomas', '1991-09-08', 50000)
-INSERT INTO profesor VALUES(6, 'Ana', 'Perez', '1997-12-12', 90000) 
+INSERT INTO profesor VALUES(6, 'Ana', 'Paz', '1997-12-12', 90000) 
 
 
 INSERT INTO estudiante values(1, 'Lucia', 'Perez', '2000-02-03', 'Contador')
@@ -53,12 +57,12 @@ INSERT INTO estudiante values(9, 'Roberto', 'Gonzalez', '2004-06-08', 'Biologia'
 INSERT INTO estudiante values(10, 'Roberto', 'Sanchez', '2000-02-03', 'Biologia')
 
 
-INSERT INTO curso VALUES(1, 'curso A', 'este es el curso A', 20, 'mañana'. 1)
-INSERT INTO curso VALUES(2, 'curso B', 'este es el curso B', 30, 'tarde'. 2)
-INSERT INTO curso VALUES(3, 'curso C', 'este es el curso C', 20, 'tarde'. 3)
-INSERT INTO curso VALUES(4, 'curso D', 'este es el curso D', 20, 'mañana'. 4)
-INSERT INTO curso VALUES(5, 'curso E', 'este es el curso E', 20, 'mañana'. 5)
-INSERT INTO curso VALUES(6, 'curso F', 'este es el curso F', 20, 'tarde'. 6)
+INSERT INTO curso VALUES(1, 'curso A', 'este es el curso A', 20, 'mañana', 1)
+INSERT INTO curso VALUES(2, 'curso B', 'este es el curso B', 30, 'tarde', 2)
+INSERT INTO curso VALUES(3, 'curso C', 'este es el curso C', 20, 'tarde', 3)
+INSERT INTO curso VALUES(4, 'curso D', 'este es el curso D', 20, 'mañana', 4)
+INSERT INTO curso VALUES(5, 'curso E', 'este es el curso E', 20, 'mañana', 5)
+INSERT INTO curso VALUES(6, 'curso F', 'este es el curso F', 20, 'tarde', 6)
 
 INSERT INTO inscripcion VALUES(1, 1, 1, '2021-03-05')
 INSERT INTO inscripcion VALUES(2, 2, 1, '2021-03-05')
@@ -80,7 +84,7 @@ INSERT INTO inscripcion VALUES(17, 6, 4, '2021-03-05')
 
 
 /* 1) Escriba una consulta que devuelva el legajo y la cantidad de cursos que realiza cada estudiante. */
-SELECT legajo, count(*) 
+SELECT legajo as legajo_estudiante, count(*) as cantidad_cursos 
 	from estudiante 
 		inner JOIN inscripcion 
 			on inscripcion.ESTUDIANTE_legajo = estudiante.legajo 
@@ -88,7 +92,7 @@ SELECT legajo, count(*)
 
 
 /* 2) Escriba una consulta que devuelva el legajo y la cantidad de cursos de los estudiantes que realizan más de un curso. */
-SELECT legajo, count(*) as cantidad_cursos 
+SSELECT legajo as legajo_estudiante, count(*) as cantidad_cursos 
 	from estudiante 
 		inner JOIN inscripcion 
 			on inscripcion.ESTUDIANTE_legajo = estudiante.legajo 
@@ -97,9 +101,33 @@ SELECT legajo, count(*) as cantidad_cursos
 					
 
 /* 3) Escriba una consulta que devuelva la información de los estudiantes que no realizan ningún curso.*/
-SELECT * 
+SELECT legajo, nombre, apellido, fecha_nacimiento, carrera 
 	from estudiante 
 		left JOIN inscripcion 
 			on inscripcion.ESTUDIANTE_legajo = estudiante.legajo 
 				group by estudiante.legajo
-                	HAVING inscripcion.numero ISNULL			
+                	HAVING inscripcion.numero ISNULL
+
+-- 4) Escriba para cada tabla, los index (incluyendo su tipo) que tiene cada una.
+-- TABLA profesor
+-- Indice Clusterizado: id 
+
+-- TABLA curso
+-- indice clusterizado: codigo
+-- indice no clusterizado: PROFESOR_id
+
+-- TABLA estudiante
+-- indice clusterizado: legajo
+
+-- TABLA inscripcion
+-- indice clusterizado: numero
+-- indice no clusterizado: ESTUDIANTE_legajo
+-- indice no clusterizado: CURSO_codigo
+
+
+-- 5) Liste toda la información sobre los estudiantes que realizan cursos con los profesores de apellido “Pérez” y “Paz”
+SELECT * FROM estudiante, inscripcion, curso, profesor WHERE
+	inscripcion.estudiante_legajo = estudiante.legajo AND
+    inscripcion.curso_codigo = curso.codigo AND
+    curso.profesor_id = profesor.id AND
+    (profesor.apellido = 'Paz' or profesor.apellido = 'Perez')					
