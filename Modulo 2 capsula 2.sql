@@ -83,3 +83,40 @@ INSERT INTO inscripcion VALUES(16, 6, 3, '2021-03-05')
 INSERT INTO inscripcion VALUES(17, 6, 4, '2021-03-05')
 
 
+-- 1) Nombre, apellido y cursos que realiza cada estudiante
+SELECT 
+	estudiante.nombre, 
+	estudiante.apellido, 
+	curso.codigo AS codigo_curso, 
+	curso.nombre AS nombre_curso, 
+	curso.descripcion AS descripcion_curso 
+		FROM estudiante, inscripcion, curso 
+				WHERE estudiante.legajo = inscripcion.ESTUDIANTE_legajo 
+					AND inscripcion.CURSO_codigo = curso.codigo
+
+
+
+-- 2) Nombre, apellido y cursos que realiza cada estudiante, ordenados por el nombre del curso
+SELECT 
+	estudiante.nombre, 
+	estudiante.apellido, 
+	curso.codigo AS codigo_curso, 
+	curso.nombre AS nombre_curso, 
+	curso.descripcion AS descripcion_curso 
+		FROM estudiante, inscripcion, curso 
+				WHERE estudiante.legajo = inscripcion.ESTUDIANTE_legajo 
+					AND inscripcion.CURSO_codigo = curso.codigo
+                    	ORDER by curso.nombre
+
+-- 3) Nombre, apellido y cursos que dicta cada profesor
+SELECT profesor.nombre, profesor.apellido, curso.nombre as nombre_curso from profesor, curso 
+	WHERE curso.profesor_id = profesor.id
+    	ORDER BY profesor.id
+
+-- 4) Nombre, apellido y cursos que dicta cada profesor, ordenados por el nombre del curso
+SELECT profesor.nombre, profesor.apellido, curso.nombre as nombre_curso from profesor, curso 
+	WHERE curso.profesor_id = profesor.id
+    	ORDER BY curso.nombre
+		
+-- 5) Cupo disponible para cada curso (Si el cupo es de 35 estudiantes y hay 5 inscriptos, el cupo disponible será 30)
+-- 6) Cursos cuyo cupo disponible sea menor a 10
