@@ -109,14 +109,24 @@ SELECT
                     	ORDER by curso.nombre
 
 -- 3) Nombre, apellido y cursos que dicta cada profesor
-SELECT profesor.nombre, profesor.apellido, curso.nombre as nombre_curso from profesor, curso 
+SELECT profesor.nombre, profesor.apellido, curso.nombre AS nombre_curso from profesor, curso 
 	WHERE curso.profesor_id = profesor.id
     	ORDER BY profesor.id
 
 -- 4) Nombre, apellido y cursos que dicta cada profesor, ordenados por el nombre del curso
-SELECT profesor.nombre, profesor.apellido, curso.nombre as nombre_curso from profesor, curso 
+SELECT profesor.nombre, profesor.apellido, curso.nombre AS nombre_curso from profesor, curso 
 	WHERE curso.profesor_id = profesor.id
     	ORDER BY curso.nombre
 		
 -- 5) Cupo disponible para cada curso (Si el cupo es de 35 estudiantes y hay 5 inscriptos, el cupo disponible será 30)
+SELECT curso.codigo, curso.nombre, curso.cupo - COUNT(curso.codigo) AS cupo_disponible 
+	FROM curso, inscripcion 
+		WHERE inscripcion.CURSO_codigo = curso.codigo 
+			GROUP BY curso.codigo
+			
 -- 6) Cursos cuyo cupo disponible sea menor a 10
+SELECT curso.codigo, curso.nombre, curso.cupo - COUNT(curso.codigo) AS cupo_disponible 
+	FROM curso, inscripcion 
+    	WHERE inscripcion.CURSO_codigo = curso.codigo 
+        	GROUP BY curso.codigo
+            	HAVING cupo_disponible > 10
